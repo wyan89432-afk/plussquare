@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plus Square</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Plus Square</h1>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <label for="searchInput">Search:</label>
+            <input type="text" id="searchInput" placeholder="e.g. 7=789  (gap=7, sum=789)">
+            <button id="searchBtn" onclick="performSearch()">Search</button>
+            <div class="search-help">
+                <small>Format: gap=sum (e.g. 7=789). Left of "=" is the row gap (0 to 15). Right of "=" is the 3-digit sum target.<br>
+                Each digit position is added: row[i] + row[i+gap] = sum. Searches the fixed table. Column overflow continues to next column.<br>
+                Ctrl+Scroll or buttons to zoom tables.</small>
+            </div>
+        </div>
+
+        <!-- Fix Table -->
+        <div class="table-section">
+            <h2>Fix Table</h2>
+            <div class="table-controls">
+                <button class="add-col-btn" onclick="addColumn()">+ Add Column</button>
+                <div class="zoom-controls">
+                    <button onclick="zoomOut('fixTable')">−</button>
+                    <button onclick="zoomReset('fixTable')">Reset</button>
+                    <button onclick="zoomIn('fixTable')">+</button>
+                </div>
+            </div>
+            <div class="table-wrapper" id="fixTableWrapper"></div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="table-section" id="resultsSection" style="display:none;">
+            <h2>Results Table</h2>
+            <p class="table-desc" id="resultsDesc"></p>
+            <div class="table-controls">
+                <div class="zoom-controls">
+                    <button onclick="zoomOut('resultsTable')">−</button>
+                    <button onclick="zoomReset('resultsTable')">Reset</button>
+                    <button onclick="zoomIn('resultsTable')">+</button>
+                </div>
+            </div>
+            <div class="table-wrapper" id="resultsTableWrapper"></div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
