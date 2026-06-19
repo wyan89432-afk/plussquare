@@ -197,7 +197,9 @@ function findPlusSquares(gap, sumDigits) {
     return matches;
 }
 
-// ============ DRAW BLUE LINES BETWEEN PAIRS ============
+// ============ DRAW CURVED ARROWS BETWEEN PAIRS ============
+const ARROW_COLORS = ['#e74c3c', '#2980b9', '#8e44ad', '#16a085', '#d35400', '#c0392b', '#27ae60', '#2c3e50'];
+
 function drawPairLines(wrapper, table, inner, matches) {
     const existing = inner.querySelector('.svg-overlay');
     if (existing) existing.remove();
@@ -210,17 +212,72 @@ function drawPairLines(wrapper, table, inner, matches) {
     svg.setAttribute('width', table.scrollWidth);
     svg.setAttribute('height', table.scrollHeight);
 
+    // Define arrowhead markers (one per color)
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    ARROW_COLORS.forEach((col, i) => {
+        const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker.setAttribute('id', 'arrowhead-' + i);
+        marker.setAttribute('markerWidth', '8');
+        marker.setAttribute('markerHeight', '8');
+        marker.setAttribute('refX', '6');
+        marker.setAttribute('refY', '3');
+        marker.setAttribute('orient', 'auto');
+        marker.setAttribute('markerUnits', 'strokeWidth');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M0,0 L6,3 L0,6 Z');
+        path.setAttribute('fill', col);
+        marker.appendChild(path);
+        defs.appendChild(marker);
+    });
+    svg.appendChild(defs);
+
     const tableRect = table.getBoundingClientRect();
 
-    matches.forEach(mt => {
+    matches.forEach((mt, idx) => {
         const aCell = getTableCell(table, mt.aRow, mt.aCol);
         const bCell = getTableCell(table, mt.bRow, mt.bCol);
         if (aCell && bCell) {
-            svg.appendChild(makeLine(aCell, bCell, tableRect));
+            const colorIdx = idx % ARROW_COLORS.length;
+            svg.appendChild(makeCurvedArrow(aCell, bCell, tableRect, colorIdx));
         }
     });
 
     inner.appendChild(svg);
+}
+
+// Draw a curved (bezier) arrow that bends around the cells between A and B
+function makeCurvedArrow(c1, c2, tableRect, colorIdx) {
+    const r1 = c1.getBoundingClientRect();
+    const r2 = c2.getBoundingClientRect();
+    const x1 = r1.left - tableRect.left + r1.width / 2;
+    const y1 = r1.top - tableRect.top + r1.height / 2;
+    const x2 = r2.left - tableRect.left + r2.width / 2;
+    const y2 = r2.top - tableRect.top + r2.height / 2;
+
+    // Bend the curve sideways so it wraps around intermediate cells
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    // Perpendicular offset for the control points
+    const bend = Math.min(80, Math.max(30, dist * 0.35));
+    // Control points offset to the right side of the path
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+    // perpendicular unit vector
+    const px = -dy / (dist || 1);
+    const py = dx / (dist || 1);
+    const cx = mx + px * bend;
+    const cy = my + py * bend;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', ARROW_COLORS[colorIdx]);
+    path.setAttribute('stroke-width', '2.5');
+    path.setAttribute('stroke-opacity', '0.9');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('marker-end', 'url(#arrowhead-' + colorIdx + ')');
+    return path;
 }
 
 function getTableCell(table, rowIdx, colIdx) {
