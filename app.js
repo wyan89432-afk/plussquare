@@ -180,10 +180,10 @@ function findPlusSquares(gap, sumDigits) {
             const bVal = tableData[bRow][bCol];
             if (!aVal || !bVal || aVal.length < 3 || bVal.length < 3) continue;
 
-            // digit-wise add per position
-            const d0 = parseInt(aVal[0]) + parseInt(bVal[0]);
-            const d1 = parseInt(aVal[1]) + parseInt(bVal[1]);
-            const d2 = parseInt(aVal[2]) + parseInt(bVal[2]);
+            // digit-wise add per position, take units digit only (mod 10, drop carry)
+            const d0 = (parseInt(aVal[0]) + parseInt(bVal[0])) % 10;
+            const d1 = (parseInt(aVal[1]) + parseInt(bVal[1])) % 10;
+            const d2 = (parseInt(aVal[2]) + parseInt(bVal[2])) % 10;
 
             if (d0 === sumDigits[0] && d1 === sumDigits[1] && d2 === sumDigits[2]) {
                 matches.push({
@@ -205,12 +205,14 @@ function drawPairLines(wrapper, table, inner, matches) {
     if (existing) existing.remove();
     if (!matches || matches.length === 0) return;
 
+    const w = table.offsetWidth || table.scrollWidth;
+    const h = table.offsetHeight || table.scrollHeight;
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.classList.add('svg-overlay');
-    svg.style.width = table.scrollWidth + 'px';
-    svg.style.height = table.scrollHeight + 'px';
-    svg.setAttribute('width', table.scrollWidth);
-    svg.setAttribute('height', table.scrollHeight);
+    svg.style.width = w + 'px';
+    svg.style.height = h + 'px';
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', h);
 
     // Define arrowhead markers (one per color)
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
