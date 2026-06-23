@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plus Square</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PlusSquare">
+    <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
     <div class="container">
@@ -13,10 +19,10 @@
         <!-- Search Bar -->
         <div class="search-section">
             <label for="searchInput">Search:</label>
-            <input type="text" id="searchInput" placeholder="e.g. 7=789  (gap=7, sum=789)">
+            <input type="text" id="searchInput" placeholder="e.g. 7=789  (gap 1-50, sum 000-999)">
             <button id="searchBtn" onclick="performSearch()">Search</button>
             <div class="search-help">
-                <small>Format: gap=sum (e.g. 7=789). Left of "=" is the row gap (0 to 15). Right of "=" is the 3-digit sum target.<br>
+                <small>Format: gap=sum (e.g. 7=789). Left of "=" is the row gap (1 to 50). Right of "=" is the 3-digit sum target.<br>
                 Each digit position is added: row[i] + row[i+gap] = sum. Searches the fixed table. Column overflow continues to next column.<br>
                 Ctrl+Scroll or buttons to zoom tables.</small>
             </div>
@@ -53,5 +59,12 @@
 
     <script src="data.js"></script>
     <script src="app.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js').catch(() => {});
+        });
+      }
+    </script>
 </body>
 </html>

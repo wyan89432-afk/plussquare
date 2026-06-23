@@ -135,8 +135,8 @@ function performSearch() {
     const gap = parseInt(m[1]);
     const sumStr = m[2].padStart(3, '0');
 
-    if (gap < 0 || gap > 15) {
-        alert('Gap must be between 0 and 15.');
+    if (gap < 1 || gap > 50) {
+        alert('Gap must be between 1 and 50.');
         return;
     }
 
